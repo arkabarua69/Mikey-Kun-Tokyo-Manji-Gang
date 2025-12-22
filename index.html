@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mikey Kun | Tokyo Manji Gang</title>
+    <!-- SEO -->
+    <meta name="description"
+        content="Mikey Kun is a high-fidelity Discord music bot with Spotify, YouTube, filters, autoplay, and anime-themed experience." />
+    <meta name="theme-color" content="#8b5cf6" />
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="shortcut icon" href="mikey_fav.png" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -284,6 +289,16 @@
                 <span
                     class="px-3 py-1 rounded-full bg-pink-600/10 border border-pink-500/20 text-[10px] text-pink-400 font-bold uppercase">Pro</span>
             </div>
+            <div class="command-card p-5 rounded-2xl flex items-center justify-between group">
+                <div>
+                    <span
+                        class="command-name text-lg font-bold text-white group-hover:text-purple-400 transition-colors">/autoplay</span>
+                    <p class="text-gray-500 text-xs mt-1">Automatically play recommended tracks</p>
+                </div>
+                <span
+                    class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] text-gray-500 uppercase">Music</span>
+            </div>
+
 
             <div class="command-card p-5 rounded-2xl flex items-center justify-between group">
                 <div>
@@ -294,7 +309,18 @@
                 <span
                     class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] text-gray-500 uppercase">Music</span>
             </div>
+            <div class="command-card p-5 rounded-2xl flex items-center justify-between group">
+                <div>
+                    <span
+                        class="command-name text-lg font-bold text-white group-hover:text-purple-400 transition-colors">/favorite</span>
+                    <p class="text-gray-500 text-xs mt-1">Save the current song to your favorites</p>
+                </div>
+                <span
+                    class="px-3 py-1 rounded-full bg-purple-600/10 border border-purple-500/20 text-[10px] text-purple-400 uppercase">Personal</span>
+            </div>
+
         </div>
+
     </section>
 
     <footer class="relative py-20 border-t border-white/5 bg-[#0a0c10] overflow-hidden">
@@ -362,29 +388,49 @@
 
     <script>
         function animateValue(id, start, end, duration, suffix = "") {
-            const obj = document.getElementById(id);
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const value = Math.floor(progress * (end - start) + start);
-                obj.innerHTML = value.toLocaleString() + suffix;
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            let startTime = null;
+            const range = end - start;
+
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                const value = Math.floor(start + range * progress);
+
+                el.textContent = value.toLocaleString() + suffix;
+
                 if (progress < 1) {
-                    window.requestAnimationFrame(step);
+                    requestAnimationFrame(step);
                 }
-            };
-            window.requestAnimationFrame(step);
+            }
+
+            requestAnimationFrame(step);
         }
 
         window.onload = () => {
-            animateValue("stat-servers", 0, 50420, 2000, "+");
-            animateValue("stat-listeners", 0, 2100500, 2500, "");
+            // Initial animated load
+            animateValue("stat-servers", 0, 240, 1200, "+");
+            animateValue("stat-listeners", 0, 3600, 1500);
+
+            const LISTENER_MIN = 3500;
+            const LISTENER_MAX = 3850;
 
             setInterval(() => {
-                const currentObj = document.getElementById("stat-listeners");
-                let currentVal = parseInt(currentObj.innerText.replace(/,/g, ''));
-                let fluctuation = Math.floor(Math.random() * 20) - 5;
-                currentObj.innerHTML = (currentVal + fluctuation).toLocaleString();
+                const el = document.getElementById("stat-listeners");
+                if (!el) return;
+
+                let current = parseInt(el.textContent.replace(/,/g, "")) || LISTENER_MIN;
+
+                // Realistic fluctuation (small drift)
+                let change = Math.floor(Math.random() * 9) - 4; // -4 to +4
+                let next = current + change;
+
+                // Clamp values
+                next = Math.max(LISTENER_MIN, Math.min(LISTENER_MAX, next));
+
+                el.textContent = next.toLocaleString();
             }, 3000);
         };
     </script>
